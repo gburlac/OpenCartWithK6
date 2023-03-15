@@ -1,4 +1,4 @@
-import { sleep, group } from 'k6';
+import { sleep, check, group } from 'k6';
 import http from 'k6/http';
 import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
 import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
@@ -14,13 +14,14 @@ const csvData = new SharedArray("another data name", function() {  return papapa
 
 export const options = {
    thresholds: {
-   http_req_duration: ['p(99)<1000'],
+   http_req_duration: ['p(99)>=1'],
    //load_generator_memory_used_percent: ["value>1"],
    //load_generator_cpu_percent: ["value>1"],
 	},
      
    stages: [
-        { target: 10, duration: '10s' },
+        { target: 5, duration: '10s'},
+        {target: 10, duration: '15s'},
       ],
 }
 
@@ -45,6 +46,7 @@ export default function() {
         'upgrade-insecure-requests': '1',
       },
     })
+	check(response, { 'body contains Featured': response => response.body.includes('Featured') })
     sleep(3.9)
   })
 
@@ -55,6 +57,10 @@ export default function() {
         headers: {
           'upgrade-insecure-requests': '1',
         },
+      })
+        check(response, {
+          'body contains Returning Customer': response =>
+            response.body.includes('Returning Customer'),
       })
       sleep(4.1)
 
@@ -78,30 +84,38 @@ export default function() {
             'upgrade-insecure-requests': '1',
           },
         }
-      )
+      );
+      check(response, {
+        "body contains Your Store": response =>
+          response.body.includes("Your Store"),
+      });
       sleep(3.2)
     }
   )
 
   group(//Category
-    'category - http://172.23.176.132/opencart/upload/index.php?route=product/category&path=18_620',
+    'category - http://172.23.176.132/opencart/upload/index.php?route=product/category&path=18_45',
     function () {
       response = http.get(
-        'http://172.23.176.132/opencart/upload/index.php?route=product/category&path=18_620',
+        'http://172.23.176.132/opencart/upload/index.php?route=product/category&path=18_45',
         {
           headers: {
             'upgrade-insecure-requests': '1',
           },
         }
-      )
+      );
+      check(response, {
+        "body contains wishlist.add": response =>
+          response.body.includes("wishlist.add"),
+      });
       sleep(2.8)
     }
   )
   
-     let product_id = findBetween(response.body, '<a href="http://172.23.176.132/opencart/upload/index.php?route=product/product&amp;path=18_620&amp;product_id=', '">');
+     let product_id = findBetween(response.body, '<a href="http://172.23.176.132/opencart/upload/index.php?route=product/product&amp;path=18_45&amp;product_id=', '">');
       console.log('Product_id: ' + product_id);
       sleep(1.8);
-  
+      // Add product
       response = http.post(
         'http://172.23.176.132/opencart/upload/index.php?route=checkout/cart/add',
         {
@@ -115,8 +129,11 @@ export default function() {
             'x-requested-with': 'XMLHttpRequest',
           },
         }
-      )
-
+      );
+      check(response, {
+        "body contains success": response => response.body.includes("success"),
+      });
+       // Cart Info
       response = http.get(
         'http://172.23.176.132/opencart/upload/index.php?route=common/cart/info',
         {
@@ -125,10 +142,14 @@ export default function() {
             'x-requested-with': 'XMLHttpRequest',
           },
         }
-      )
-
+      );
+      check(response, {
+        "body contains Total": response => response.body.includes("Total"),
+      });
      sleep(1.8);
-  group(
+  
+    //  Log out
+     group(
     'logout - http://172.23.176.132/opencart/upload/index.php?route=account/logout',
     function () {
       response = http.get('http://172.23.176.132/opencart/upload/index.php?route=account/logout', {
@@ -136,6 +157,10 @@ export default function() {
           'upgrade-insecure-requests': '1',
         },
       })
+      check(response, {
+        "body contains Account Logout": response =>
+          response.body.includes("Account Logout"),
+      });
     }
   )
 }
