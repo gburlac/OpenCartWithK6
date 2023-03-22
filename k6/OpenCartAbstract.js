@@ -7,7 +7,7 @@ import { randomIntBetween,
   randomString,
   randomItem,
   uuidv4,
-  findBetween } from "https://jslib.k6.io/k6-utils/1.2.0/index.js";
+  findBetween } from "https://jslib.k6.io/k6-utils/1.1.0/index.js";
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
 
 const csvData = new SharedArray("another data name", function() {  return papaparse.parse(open('./users.csv'), { header: true }).data;});
@@ -39,10 +39,10 @@ export default function() {
     email: newUser.email,
     password: newUser.password,
   };
+  // https://opencart.abstracta.us/
 
-
-  group('home - http://172.23.176.132/opencart/upload/index.php?route=common/home', function () {
-    response = http.get('http://172.23.176.132/opencart/upload/index.php?route=common/home', {
+  group('home - https://opencart.abstracta.us/index.php?route=common/home', function () {
+    response = http.get('https://opencart.abstracta.us/index.php?route=common/home', {
       headers: {
         'upgrade-insecure-requests': '1',
       },
@@ -52,9 +52,9 @@ export default function() {
   })
 
   group(//Login
-    'account/login - http://172.23.176.132/opencart/upload/index.php?route=account/login',
+    'account/login - https://opencart.abstracta.us/opencart/upload/index.php?route=account/login',
     function () {
-      response = http.get('http://172.23.176.132/opencart/upload/index.php?route=account/login', {
+      response = http.get('https://opencart.abstracta.us/opencart/upload/index.php?route=account/login', {
         headers: {
           'upgrade-insecure-requests': '1',
         },
@@ -113,17 +113,16 @@ export default function() {
     }
   )
   
-      let product_id_list = findBetween(response.body, '<a href="http://172.23.176.132/opencart/upload/index.php?route=product/product&amp;path=24&amp;product_id=','">',true);
-      console.log('Product_id_list: ' + product_id_list);
-      let random_product_id = randomItem(product_id_list);
-      console.log('Product_id_selected: ' + random_product_id);
-      sleep(2.8);
+      let product_id = findBetween(response.body, '<a href="http://172.23.176.132/opencart/upload/index.php?route=product/product&amp;path=24&amp;product_id=','">');
+      // let product_id = findBetween(response.body, '<a href="http://172.23.176.132/opencart/upload/index.php?route=product/product&path=24&product_id=',  '">');
+      console.log('Product_id: ' + product_id);
+      sleep(1.8);
       // Add product
       response = http.post(
         'http://172.23.176.132/opencart/upload/index.php?route=checkout/cart/add',
         {
           quantity: '1',
-          product_id: random_product_id,
+          product_id: product_id,
         },
         {
           headers: {
