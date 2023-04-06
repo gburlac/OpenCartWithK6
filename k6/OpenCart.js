@@ -36,13 +36,12 @@ export default function() {
   console.log ('Url===: ' + url);
   let formData, response;
   let newUser = csvData[__VU - 1];
-  console.log('User: ', JSON.stringify(newUser));
+  console.log('User===: ', JSON.stringify(newUser));
   const params = {
     email: newUser.email,
     password: newUser.password,
   };
-
-  
+//Home
   group('home', function () {
     response = http.get(url + '/opencart/upload/index.php?route=common/home', {
       headers: {
@@ -52,8 +51,8 @@ export default function() {
 	check(response, { 'body contains Featured': response => response.body.includes('Featured') })
     sleep(3.9)
   })
-
-  group(//Login
+//Login
+  group(
     'account/login',
     function () {
       response = http.get(url + '/opencart/upload/index.php?route=account/login', {
@@ -83,7 +82,7 @@ export default function() {
         {
           headers: {
             'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryCxEn3Utde0fgXECN',
-            origin: 'http://172.23.176.132',
+            origin: "'"+ url +"'",
             'upgrade-insecure-requests': '1',
           },
         }
@@ -95,8 +94,8 @@ export default function() {
       sleep(3.2)
     }
   )
-
-  group(//Category
+//Category 
+  group(
     'category',
     function () {
       response = http.get(
@@ -115,10 +114,10 @@ export default function() {
     }
   )
   
-      let product_id_list = findBetween(response.body, '<a href="',url + '/opencart/upload/index.php?route=product/product&amp;path=24&amp;product_id=','">',true);
-      console.log('Product_id_list: ' + product_id_list);
+      var product_id_list = findBetween(response.body, '<a href="'+ url + '/opencart/upload/index.php?route=product/product&amp;path=24&amp;product_id=','">',true);
+      console.log('Product_id_list===: ' + product_id_list);
       let random_product_id = randomItem(product_id_list);
-      console.log('Product_id_selected: ' + random_product_id);
+      console.log('Product_id_selected===: ' + random_product_id);
       sleep(2.8);
       
       // Add product
@@ -154,7 +153,7 @@ export default function() {
       });
      sleep(1.8);
   
-    //  Log out
+    //Log out
      group(
     'logout',
     function () {
