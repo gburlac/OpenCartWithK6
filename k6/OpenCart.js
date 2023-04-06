@@ -41,8 +41,7 @@ export default function() {
     email: newUser.email,
     password: newUser.password,
   };
-
-  
+//Home
   group('home', function () {
     response = http.get(url + '/opencart/upload/index.php?route=common/home', {
       headers: {
@@ -52,8 +51,8 @@ export default function() {
 	check(response, { 'body contains Featured': response => response.body.includes('Featured') })
     sleep(3.9)
   })
-
-  group(//Login
+//Login
+  group(
     'account/login',
     function () {
       response = http.get(url + '/opencart/upload/index.php?route=account/login', {
@@ -95,8 +94,8 @@ export default function() {
       sleep(3.2)
     }
   )
-
-  group(//Category
+//Category 
+  group(
     'category',
     function () {
       response = http.get(
@@ -154,7 +153,7 @@ export default function() {
       });
      sleep(1.8);
   
-    //  Log out
+    //Log out
      group(
     'logout',
     function () {
