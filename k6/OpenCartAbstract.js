@@ -39,10 +39,10 @@ export default function() {
     email: newUser.email,
     password: newUser.password,
   };
-  // https://opencart.abstracta.us/
-
-  group('home - https://opencart.abstracta.us/index.php?route=common/home', function () {
-    response = http.get('https://opencart.abstracta.us/index.php?route=common/home', {
+  
+  
+  group('home - https://opencart.abstracta.us/index.php?route=account/home', function () {
+    response = http.get('https://opencart.abstracta.us/index.php?route=account/home', {
       headers: {
         'upgrade-insecure-requests': '1',
       },
@@ -51,7 +51,7 @@ export default function() {
     sleep(3.9)
   })
 
-  group(//Login
+  group(//Login https://opencart.abstracta.us/index.php?route=account/login
     'account/login - https://opencart.abstracta.us/opencart/upload/index.php?route=account/login',
     function () {
       response = http.get('https://opencart.abstracta.us/opencart/upload/index.php?route=account/login', {
@@ -77,7 +77,7 @@ export default function() {
       });
 
       response = http.post(
-        'http://172.23.176.132/opencart/upload/index.php?route=account/login', formData.body(),
+        'https://opencart.abstracta.us/opencart/upload/index.php?route=account/login', formData.body(),
         {
           headers: {
             'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryCxEn3Utde0fgXECN',
