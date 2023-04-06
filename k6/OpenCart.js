@@ -32,6 +32,8 @@ export function handleSummary(data) {
 }
 
 export default function() {
+  var url = 'http://172.23.176.132';
+  console.log ('Url===: ' + url);
   let formData, response;
   let newUser = csvData[__VU - 1];
   console.log('User: ', JSON.stringify(newUser));
@@ -40,9 +42,9 @@ export default function() {
     password: newUser.password,
   };
 
-
-  group('home - http://172.23.176.132/opencart/upload/index.php?route=common/home', function () {
-    response = http.get('http://172.23.176.132/opencart/upload/index.php?route=common/home', {
+  
+  group('home', function () {
+    response = http.get(url + '/opencart/upload/index.php?route=common/home', {
       headers: {
         'upgrade-insecure-requests': '1',
       },
@@ -52,9 +54,9 @@ export default function() {
   })
 
   group(//Login
-    'account/login - http://172.23.176.132/opencart/upload/index.php?route=account/login',
+    'account/login',
     function () {
-      response = http.get('http://172.23.176.132/opencart/upload/index.php?route=account/login', {
+      response = http.get(url + '/opencart/upload/index.php?route=account/login', {
         headers: {
           'upgrade-insecure-requests': '1',
         },
@@ -77,7 +79,7 @@ export default function() {
       });
 
       response = http.post(
-        'http://172.23.176.132/opencart/upload/index.php?route=account/login', formData.body(),
+        url + '/opencart/upload/index.php?route=account/login', formData.body(),
         {
           headers: {
             'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryCxEn3Utde0fgXECN',
@@ -95,10 +97,10 @@ export default function() {
   )
 
   group(//Category
-    'category - http://172.23.176.132/opencart/upload/index.php?route=product/category&path=24',
+    'category',
     function () {
       response = http.get(
-        'http://172.23.176.132/opencart/upload/index.php?route=product/category&path=24',
+        url + '/opencart/upload/index.php?route=product/category&path=24',
         {
           headers: {
             'upgrade-insecure-requests': '1',
@@ -113,14 +115,15 @@ export default function() {
     }
   )
   
-      let product_id_list = findBetween(response.body, '<a href="http://172.23.176.132/opencart/upload/index.php?route=product/product&amp;path=24&amp;product_id=','">',true);
+      let product_id_list = findBetween(response.body, '<a href="',url + '/opencart/upload/index.php?route=product/product&amp;path=24&amp;product_id=','">',true);
       console.log('Product_id_list: ' + product_id_list);
       let random_product_id = randomItem(product_id_list);
       console.log('Product_id_selected: ' + random_product_id);
       sleep(2.8);
+      
       // Add product
       response = http.post(
-        'http://172.23.176.132/opencart/upload/index.php?route=checkout/cart/add',
+        url + '/opencart/upload/index.php?route=checkout/cart/add',
         {
           quantity: '1',
           product_id: random_product_id,
@@ -138,7 +141,7 @@ export default function() {
       });
        // Cart Info
       response = http.get(
-        'http://172.23.176.132/opencart/upload/index.php?route=common/cart/info',
+        url + '/opencart/upload/index.php?route=common/cart/info',
         {
           headers: {
             accept: 'text/html, */*; q=0.01',
@@ -153,9 +156,9 @@ export default function() {
   
     //  Log out
      group(
-    'logout - http://172.23.176.132/opencart/upload/index.php?route=account/logout',
+    'logout',
     function () {
-      response = http.get('http://172.23.176.132/opencart/upload/index.php?route=account/logout', {
+      response = http.get(url + '/opencart/upload/index.php?route=account/logout', {
         headers: {
           'upgrade-insecure-requests': '1',
         },
